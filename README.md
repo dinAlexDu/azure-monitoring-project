@@ -86,19 +86,34 @@ terraform destroy
 
 ### Azure Resources Overview
 ![Azure Resources Overview](images/azure_resources_overview.png)
+Description: Shows all resources created in the BasicInfraRG resource group, including the VM, NSG, Public IP, etc.
 
-### Virtual Machine Details
-![VM Details](images/vm_details.png)
+### Alert Configuration
+![Alert Configuration](images/alert_configuration.png)
+Description: Displays the alert configuration showing the Percentage CPU signal and configured conditions.
 
-### Virtual Machine Networking
+### Alert Fired
+![Alert Fired](images/alert_fired.png)
+Description: Shows the UbuntuVM | Alerts page with the triggered alert.
+
+### CPU Utilization Test
+![CPU Utilization Test](images/cpu_utilization_test.png)
+Description: Displays the command `yes > /dev/null &` running in the VM to increase CPU usage.
+
+### VM Networking
 ![VM Networking](images/vm_networking.png)
+Description: Shows the VM's network configuration summary, including Public IP, associated NSG, and Subnet.
 
-### NSG Rules Configuration
-![NSG Rules](images/nsg_rules.png)
+### Inbound Security Rule
+![Inbound Security Rule](images/inbound_rule.png)
+Description: Displays the NSG inbound rule configuration for SSH (AllowAnySSHInbound).
 
-### CPU Alert Rule Configuration
-![CPU Alert Rule](images/cpu_alert_rule.png)
+### SSH Connection
+![SSH Connection](images/ssh_connection.png)
+Description: Shows the terminal with a successful SSH connection to the VM (`azureadmin@<PublicIP>`).
 
-### Triggered CPU Alert
-![Triggered Alert](images/fired_alert.png)
+### Action Group Configuration
+![Action Group Configuration](images/action_group_configuration.png)
+Description: Displays the basic configuration of the Action Group, including the name and notification type.
+
 
