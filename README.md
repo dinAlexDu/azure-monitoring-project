@@ -67,6 +67,12 @@ Run the following command to stress the CPU and trigger an alert:
 yes > /dev/null &
 ```
 
+### 5. Clean Up Resources
+To avoid unnecessary charges, destroy the resources created by Terraform when you no longer need them:
+```bash
+terraform destroy
+```
+
 ## Monitoring Setup
 ### Azure Monitor
 1. Navigate to Azure Monitor in the Azure portal.
@@ -76,4 +82,23 @@ yes > /dev/null &
 1. Set up an Action Group with notifications (email or SMS) for alert triggers.
 
 
+## Screenshots
+
+### Azure Resources Overview
+![Azure Resources Overview](images/azure_resources_overview.png)
+
+### Virtual Machine Details
+![VM Details](images/vm_details.png)
+
+### Virtual Machine Networking
+![VM Networking](images/vm_networking.png)
+
+### NSG Rules Configuration
+![NSG Rules](images/nsg_rules.png)
+
+### CPU Alert Rule Configuration
+![CPU Alert Rule](images/cpu_alert_rule.png)
+
+### Triggered CPU Alert
+![Triggered Alert](images/fired_alert.png)
 
