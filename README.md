@@ -10,12 +10,14 @@ This project demonstrates how to set up and monitor an Azure Virtual Machine usi
 ## Table of Contents
 1. [Project Objectives](#project-objectives)
 2. [Steps Implemented](#steps-implemented)
-3. [Monitoring Setup](#monitoring-setup)
-4. [Screenshots](#screenshots)
-5. [Technologies Used](#technologies-used)
-6. [Useful Links](#useful-links)
-7. [License](#license)
-8. [Contributions](#contributions)
+3. [Terraform Configuration](#terraform-configuration)
+4. [Monitoring Setup](#monitoring-setup)
+5. [Screenshots](#screenshots)
+6. [Technologies Used](#technologies-used)
+7. [Useful Links](#useful-links)
+8. [License](#license)
+9. [Contributions](#contributions)
+
 
 ---
 
@@ -83,6 +85,170 @@ This project demonstrates how to set up and monitor an Azure Virtual Machine usi
      ```
 
 ---
+## Terraform Configuration
+
+## Terraform Configuration
+
+The `main.tf` file automates the provisioning of Azure infrastructure. This configuration is used to deploy a resource group, virtual network, subnets, a public IP, and a virtual machine. Below is a breakdown of its components:
+
+**➡️ [View the Full main.tf Configuration in the Repository](./main.tf)**
+---
+
+### 1. Provider Configuration
+
+The provider block specifies the Azure Resource Manager (AzureRM) as the cloud provider and includes the subscription ID for deploying resources:
+
+```hcl
+provider "azurerm" {
+  features {}
+  subscription_id = "e3231a6e-57d7-4fd6-9d16-bc2237d18c98"
+}
+```
+### 2. Resource Group
+A resource group is created to organize all the Azure resources:
+
+```hcl
+resource "azurerm_resource_group" "rg" {
+  name     = "BasicInfraRG"
+  location = "West Europe"
+}
+```
+  - Name: BasicInfraRG
+  - Location: West Europe
+    
+### 3. Virtual Network (VNet)
+Defines the virtual network with an address space of 10.0.0.0/16:
+
+```hcl
+resource "azurerm_virtual_network" "vnet" {
+  name                = "BasicVNet"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  address_space       = ["10.0.0.0/16"]
+}
+```
+### 4. Subnets
+Two subnets are created within the virtual network for segmentation:
+
+```hcl
+resource "azurerm_subnet" "default" {
+  name                 = "default"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.0.0/24"]
+}
+
+resource "azurerm_subnet" "basic" {
+  name                 = "BasicSubnet"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+```
+  - Subnets:
+  - default: 10.0.0.0/24
+  - BasicSubnet: 10.0.1.0/24
+
+---
+### 5. Public IP Address
+Configures a static public IP address with a Standard SKU for the virtual machine:
+
+```hcl
+resource "azurerm_public_ip" "public_ip" {
+  name                = "UbuntuVM-PublicIP"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+```
+### 6. Network Interface
+Creates a network interface to connect the VM to the virtual network:
+
+```hcl
+resource "azurerm_network_interface" "nic" {
+  name                = "UbuntuVM-nic"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.default.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.public_ip.id
+  }
+}
+```
+  - Private IP Allocation: Dynamic
+  - Public IP Address: Linked to the previously created public_ip
+
+### 7. Virtual Machine
+Provisions a Linux-based virtual machine with an Ubuntu image:
+
+```hcl
+resource "azurerm_virtual_machine" "vm" {
+  name                  = "UbuntuVM"
+  location              = azurerm_resource_group.rg.location
+  resource_group_name   = azurerm_resource_group.rg.name
+  network_interface_ids = [azurerm_network_interface.nic.id]
+  vm_size               = "Standard_B1s"
+```
+  - VM Name: UbuntuVM
+  - Size: Standard_B1s (1 vCPU, 1GB RAM)
+
+OS Disk
+Defines the operating system disk with Standard_LRS storage type:
+
+```hcl
+  storage_os_disk {
+    name              = "UbuntuOSDisk"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
+```
+OS Image
+Specifies the Ubuntu 20.04 LTS image from Canonical:
+
+```hcl
+  storage_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts-gen2"
+    version   = "latest"
+  }
+```
+OS Profile and Configuration
+Configures the VM's admin username and password:
+
+```hcl
+  os_profile {
+    computer_name  = "UbuntuVM"
+    admin_username = "azureadmin"
+    admin_password = "P@ssw0rd12345"
+  }
+
+  os_profile_linux_config {
+    disable_password_authentication = false
+  }
+}
+```
+
+Highlights:
+- Static Public IP for predictable network access.
+- Segmented subnets for better network management.
+- Standard B1s VM size for cost-effective deployment.
+- Password authentication enabled for simplicity during testing.
+
+
+For the full configuration, refer to the main.tf file in the repository.
+
+
+
+
+
+
+
 
 ## Monitoring Setup
 
